@@ -1,2 +1,4 @@
 ~$*.doc*
 #~$Report.docx
+
+.vagrant
