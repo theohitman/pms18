@@ -1,0 +1,4 @@
+postgresql:
+  name: demodb
+  user: demouser
+  pass: pass123

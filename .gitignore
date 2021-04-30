@@ -17,6 +17,7 @@
 # Certificates
 *.crt
 *.key
+*.csr
 
 # Various files
 notes.txt

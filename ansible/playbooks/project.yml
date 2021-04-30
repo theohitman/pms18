@@ -18,10 +18,10 @@
     - postgres
   vars:
     postgresql_databases:
-      - name: demodb
+      - name: "{{postgresql.name}}"
     postgresql_users:
-      - name: demouser
-        password: pass123
+      - name: "{{postgresql.user}}"
+        password: "{{postgresql.pass}}"
     postgresql_locales:
       - 'en_US.UTF-8'
     postgresql_hba_entries:
