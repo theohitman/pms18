@@ -3,7 +3,7 @@
 
   vars:
     user_dir: "/home/vagrant"
-    app_dir: "{{user_dir}}/quickstart"
+    app_dir: "{{user_dir}}/pms18/QuickStart-App"
     git_repo_url: "https://github.com/theohitman/pms18.git"
     git_repo_branch: "main"
   
@@ -17,10 +17,57 @@
       line: "{{lookup('pipe', 'ssh-keyscan -t rsa github.com')}}"
       regexp: "^github\\.com"
 
-  - name: clone flask project
+  - name: clone project
     git:
       repo: "{{git_repo_url}}"
       version: "{{git_repo_branch}}"
       clone: yes
-      dest: "{{app_dir}}"
+      dest: "{{user_dir}}/pms18"
     changed_when: true
+
+  - name: install and activate virtual environment
+    block:
+    - name: setup virtual environment
+      pip:
+        requirements: "{{app_dir}}/requirements.txt"
+        virtualenv: "{{app_dir}}/fvenv"
+        virtualenv_python: python3
+        state: forcereinstall
+    rescue:
+    - name: "APT - install misc packages"
+      apt:
+        name: [python3, python3-pip, python3-virtualenv, virtualenv, libmysqlclient-dev, mycli, pgcli, libpq-dev]
+        update_cache: yes
+      become: yes
+      become_user: root
+      when: hostvars[inventory_hostname].ansible_distribution == 'Ubuntu'
+    always:
+    - name: setup virtual environment
+      pip:
+        requirements: "{{app_dir}}/requirements.txt"
+        virtualenv: "{{app_dir}}/fvenv"
+        virtualenv_python: python3
+        state: forcereinstall
+      
+    - name: copy flask service file
+      template:
+        src: ../files/flask/flaskgunicorn.service.j2
+        dest: "/etc/systemd/system/flaskgunicorn.service"
+      become: yes
+      become_user: root
+      notify: restart flaskgunicorn
+
+    - name: ensure flaskgunicorn service started
+      service: 
+        name: flaskgunicorn
+        state: started
+        enabled: yes
+      become: yes
+
+  handlers:
+
+  - name: restart flaskgunicorn
+    service:
+      name: flaskgunicorn
+      state: restarted
+    become: yes
