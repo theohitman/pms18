@@ -13,7 +13,7 @@ sudo apt install libarchive-tools
 ## Usage
 
 ```bash
-# Start the virtual machine
+# Start the virtual machines
 vagrant up
 
 # Copy vagrant ssh configuration to host machine

@@ -9,27 +9,27 @@
     - email_address: itp20103@hua.gr
     - organization_name: HUA
   tasks:
-    - name: create ../files/cert directory
+    - name: create ../files/certs directory
       file:
-        path: ../files/cert
+        path: ../files/certs
         state: directory
     - name: Generate an OpenSSL private key
       openssl_privatekey:
-        path: "../files/cert/server.key"
+        path: "../files/certs/server.key"
         size: "{{ key_size }}"
         type: "{{ key_type }}"
         backup: yes
     - name: Generate an OpenSSL Certificate Signing Request with Subject information
       openssl_csr:
-        path: "../files/cert/server.csr"
-        privatekey_path: "../files/cert/server.key"
+        path: "../files/certs/server.csr"
+        privatekey_path: "../files/certs/server.key"
         country_name: "{{ country_name }}"
         organization_name: "{{ organization_name }}"
         email_address: "{{ email_address }}"
         common_name: "{{ server_hostname }}"
     - name: Generate a Self Signed OpenSSL certificate
       openssl_certificate:
-        path: "../files/cert/server.crt"
-        privatekey_path: "../files/cert/server.key"
-        csr_path: "../files/cert/server.csr"
+        path: "../files/certs/server.crt"
+        privatekey_path: "../files/certs/server.key"
+        csr_path: "../files/certs/server.csr"
         provider: selfsigned

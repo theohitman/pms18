@@ -1,5 +1,15 @@
 ## Προηγμένες Τεχνικές Διαχείρισης Υπολογιστικών Υποδομών
 
-1. Ακολουθήστε τις οδηγίες του README.md στο path ./vagrant για να στηθεί το εικονικό περιβάλλον που θα τρέξει η εφαρμογή
+1. Ακολούθησε τις οδηγίες του README.md στο path ./vagrant για να στηθεί το εικονικό περιβάλλον που θα τρέξει η εφαρμογή
 
-2. Στο path ./project υπάρχει το README.md με οδηγίες για την εγκατάσταση της εφαρμογής
+2. Τρέξε το playbooks/openssl_certificates.yml για να δημιουργηθούν τα πιστοποιητικά για τον server
+
+```bash
+ansible-playbook playbooks/openssl_certificates.yml 
+```
+
+3. Τρέξε το playbooks/project.yml για να παραμετροποιηθούν τα VMs για την εφαρμογή
+
+```bash
+ansible-playbook playbooks/project.yml
+```
