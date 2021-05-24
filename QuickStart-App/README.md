@@ -1,5 +1,8 @@
 ## Απλή εφαρμογή εγγραφής και σύνδεσης χρηστών 
 
+https://flask-user.readthedocs.io/en/latest/quickstart_app.html 
+
+
 * Για εγκατάσταση τρέξε:
 
 ```bash

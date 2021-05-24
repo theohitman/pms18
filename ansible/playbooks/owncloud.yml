@@ -1,0 +1,66 @@
+---
+- hosts: app02
+  
+
+  vars:
+    user_dir: "/home/vagrant"
+    owncloud_url: "https://download.owncloud.org/community/owncloud-complete-20210326.tar.bz2"
+  
+  tasks:
+
+  - name: Add PHP Repository
+    apt_repository:
+      validate_certs: no
+      repo: ppa:ondrej/php
+      state: present
+    become: yes
+
+  - name: "APT - Install Prerequisites"
+    apt:
+      name: [apache2, mariadb-server, mariadb-client, php7.3, libapache2-mod-php7.3, php7.3-mysql, php7.3-intl, php7.3-curl, php7.3-json, php7.3-gd, php7.3-xml, php7.3-mbstring, php7.3-zip]
+      update_cache: yes
+    become: yes
+    when: hostvars[inventory_hostname].ansible_distribution == 'Ubuntu'
+
+
+  - name: Download owncloud
+    get_url:
+      url: "{{owncloud_url}}"
+      dest: "{{user_dir}}"
+      #force: yes
+  
+  - name: Unarchive downloaded file 
+    ansible.builtin.unarchive:
+      src: /home/vagrant/owncloud-complete-20210326.tar.bz2
+      dest: /var/www
+      remote_src: yes
+    become: yes
+  
+  - name: Copy ownlcloud conf file
+    template:
+      src: ../files/owncloud.conf
+      dest: "/etc/apache2/sites-available/owncloud.conf"
+    become: yes
+
+  - name: Enable owncloud site on apache
+    file:
+      src: "/etc/apache2/sites-available/owncloud.conf"
+      dest: "/etc/apache2/sites-enabled/owncloud.conf"
+      state: link
+    become: yes
+    notify: restart apache2
+
+  - name: Enable apache modules
+    apache2_module:
+      name: rewrite
+      state: present
+      ignore_configcheck: True
+    become: yes
+    notify: restart apache2
+
+
+  handlers:
+    - name: restart apache2
+      service:
+        name: apache2
+        state: restarted
