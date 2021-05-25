@@ -50,14 +50,23 @@
     become: yes
     notify: restart apache2
 
-  - name: Enable apache modules
+  - name: Enable apache rewrite module
     apache2_module:
       name: rewrite
       state: present
       ignore_configcheck: True
     become: yes
     notify: restart apache2
-
+  
+  - name: Change ownership of owncloud directory
+    file:
+      path: /var/www/owncloud
+      state: directory
+      recurse: yes
+      owner: www-data
+      group: www-data
+    become: yes
+    notify: restart apache2
 
   handlers:
     - name: restart apache2
