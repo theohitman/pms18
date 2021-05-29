@@ -1,0 +1,23 @@
+---
+- hosts: app02
+  tasks:
+
+    - name: Install The Go Programming Language
+      apt:
+        name: golang-go
+        update_cache: yes
+      become: yes
+    
+    - name: Download MailHog
+      command: go get github.com/mailhog/MailHog
+
+    # - name: Copy MailHog Service File
+    #   template:
+    #     src: ../files/mailhog.init.j2
+    #     dest: "/etc/systemd/system/mailhog.service"
+    #   become: yes
+
+    - name: Run MailHog
+      command: go/bin/MailHog
+      async: 1000
+      poll: 0
