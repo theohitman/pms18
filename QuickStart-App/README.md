@@ -13,7 +13,12 @@ ansible-playbook playbooks/quickstart.yml
 
 
 # Για να τρέξει:
+cd .\QuickStart-App
 python quickstart_app.py
 
 # Για εγκατάσταση τρέξε:
 pip install -r requirements.txt
+
+# Admin Credentials
+admin
+Admin1
