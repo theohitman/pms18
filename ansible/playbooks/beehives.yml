@@ -30,3 +30,32 @@
       - { type: host, database: all, user: all, address: '127.0.0.1/32', auth_method: md5 }
       - { type: host, database: all, user: all, address: '0.0.0.0/0', auth_method: md5 }
       - { type: host, database: all, user: all, address: '::1/128', auth_method: md5 }
+
+- hosts: app01
+
+  vars:
+    user_dir: "/home/vagrant"
+    app_dir: "{{user_dir}}/project-beehives"
+    git_repo_url: "https://github.com/theohitman/pms18.git"
+    git_repo_branch: "main"
+  
+  tasks:
+
+  - name: ensure github.com is a known host
+    lineinfile:
+      dest: "{{user_dir}}/.ssh/known_hosts"
+      create: yes
+      state: present
+      line: "{{lookup('pipe', 'ssh-keyscan -t rsa github.com')}}"
+      regexp: "^github\\.com"
+
+  - name: clone flask project
+    git:
+      repo: "{{git_repo_url}}"
+      version: "{{git_repo_branch}}"
+      clone: yes
+      dest: "{{app_dir}}"
+    changed_when: true
+
+  - name: copy env file
+    shell : "cp {{app_dir}}/.env.example {{app_dir}}/.env"
