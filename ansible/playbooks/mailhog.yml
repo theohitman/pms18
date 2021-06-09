@@ -19,5 +19,5 @@
 
     - name: Run MailHog
       command: go/bin/MailHog
-      async: 1000
+      async: 5000
       poll: 0
