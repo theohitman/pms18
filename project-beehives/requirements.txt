@@ -1,6 +1,5 @@
 Flask-User
 email_validator
-python-dotenv
 astroid==2.5.2
 click==7.1.2
 Flask==1.1.2
