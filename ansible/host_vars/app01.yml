@@ -3,8 +3,17 @@ service:
   execstart: /home/vagrant/pms18/project-beehives/fvenv/bin/python quickstart_app.py
 app_port: 8000
 
+# service:
+#   workingdir: /home/vagrant/flask-project/
+#   execstart: /home/vagrant/flask-project/fvenv/bin/gunicorn --access-logfile - --workers 3 --bind 0.0.0.0:{{app_port}} app.main:app
+# app_port: 5000
+
 app:
   env:
-    SQLALCHEMY_DATABASE_URI: postgresql://demouser:pass123@192.168.135.121/demodb
+    SQLALCHEMY_DATABASE_URI: sqlite:///quickstart_app.sqlite
+    #SQLALCHEMY_DATABASE_URI: postgresql://demouser:pass123@192.168.135.121/demodb
     SQLALCHEMY_TRACK_MODIFICATIONS: False
     SECRET_KEY: sfvgbrh212131
+
+
+    

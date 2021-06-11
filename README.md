@@ -8,8 +8,9 @@
 ansible-playbook playbooks/openssl_certificates.yml 
 ```
 
-3. Τρέξε το playbooks/project.yml για να παραμετροποιηθούν τα VMs για την εφαρμογή
+3. Τρέξε το playbooks/beehives.yml για να παραμετροποιηθούν τα VMs για την εφαρμογή
 
 ```bash
-ansible-playbook playbooks/project.yml
+ansible-galaxy install geerlingguy.postgresql
+ansible-playbook playbooks/beehives.yml
 ```
