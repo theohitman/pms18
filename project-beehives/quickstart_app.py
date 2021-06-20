@@ -9,14 +9,17 @@ from flask.templating import render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_user import current_user, login_required, roles_required, UserManager, UserMixin
 from flask_mail import Mail, Message
+from werkzeug.utils import secure_filename
 import os
 import datetime
+import owncloud
 from dotenv import load_dotenv
 
 # load dotenv in the base root
 APP_ROOT = os.path.dirname(__file__)   # refers to application_top
 dotenv_path = os.path.join(APP_ROOT, '.env')
 load_dotenv(dotenv_path)
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'bmp'}
 
 # Class-based application configuration
 
@@ -26,6 +29,12 @@ class ConfigClass(object):
 
     # Flask settings
     SECRET_KEY = os.getenv("SECRET_KEY")
+
+    # OwnCloud settings
+    OWNCLOUD_USERNAME = os.getenv("OWNCLOUD_USERNAME")
+    OWNCLOUD_PASSWORD = os.getenv("OWNCLOUD_PASSWORD")
+    OWNCLOUD_URL = os.getenv("OWNCLOUD_URL")
+    OWNCLOUD_FOLDER = os.getenv("OWNCLOUD_FOLDER")
 
     # Flask-SQLAlchemy settings
     # File-based SQL database
@@ -74,6 +83,10 @@ def create_app():
 
     app.config.update(mail_settings)
 
+    oc = owncloud.Client(ConfigClass.OWNCLOUD_URL)
+    oc.login(ConfigClass.OWNCLOUD_USERNAME, ConfigClass.OWNCLOUD_PASSWORD)
+    oc.mkdir(ConfigClass.OWNCLOUD_FOLDER)
+
     # Initialize Flask-SQLAlchemy
     db = SQLAlchemy(app)
 
@@ -88,16 +101,16 @@ def create_app():
         # User authentication information. The collation='NOCASE' is required
         # to search case insensitively when USER_IFIND_MODE is 'nocase_collation'.
         username = db.Column(
-            db.String(100, collation='NOCASE'), nullable=False, unique=True)
-        email = db.Column(db.String(255, collation='NOCASE'), nullable=True)
+            db.String(100), nullable=False, unique=True)
+        email = db.Column(db.String(255), nullable=True)
         email_confirmed_at = db.Column(db.DateTime())
         password = db.Column(db.String(255), nullable=False, server_default='')
 
         # User information
         first_name = db.Column(
-            db.String(100, collation='NOCASE'), nullable=False, server_default='')
+            db.String(100), nullable=False, server_default='')
         last_name = db.Column(
-            db.String(100, collation='NOCASE'), nullable=False, server_default='')
+            db.String(100), nullable=False, server_default='')
 
         # Define the relationship to Role via UserRoles
         roles = db.relationship('Role', secondary='user_roles')
@@ -125,15 +138,17 @@ def create_app():
         country = db.Column(db.String(200))
         address = db.Column(db.String(255))
         production_area = db.Column(db.String(255))
+        img_url = db.Column(db.String(255))
         beehives = db.Column(db.Integer)
 
-        def __init__(self, beekeeper_id, name, city, country, address, production_area, beehives):
+        def __init__(self, beekeeper_id, name, city, country, address, production_area, beehives, img_url):
             self.beekeeper_id = beekeeper_id
             self.name = name
             self.city = city
             self.country = country
             self.address = address
             self.production_area = production_area
+            self.img_url = img_url
             self.beehives = beehives
 
     # Setup Flask-User and specify the User data-model
@@ -167,6 +182,9 @@ def create_app():
         db.session.commit()
     # The Home page is accessible to anyone
 
+    def allowed_file(filename):
+        return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
     @app.route('/')
     def home_page():
         return render_template('home_page.html')
@@ -201,30 +219,50 @@ def create_app():
         if request.method == 'POST':
             if not request.form['name'] or not request.form['city'] or not request.form['country'] or not request.form['production_area'] or not request.form['beekeeper_id'] or not request.form['address']:
                 flash('Please enter all the fields', 'error')
+            elif 'image' not in request.files:
+                    flash('No image found')
+                    return redirect(request.url)
             else:
-                form = ApplicationForms(request.form['beekeeper_id'],
-                                        request.form['name'],
-                                        request.form['city'],
-                                        request.form['country'],
-                                        request.form['address'],
-                                        request.form['production_area'],
-                                        request.form['beehives'])
-                db.session.add(form)
-                db.session.commit()
-                msg = Message(ConfigClass.USER_APP_NAME, recipients=[
-                              current_user.email, 'itp20132@hua.gr'])
-                msg.html = f'You Forms has been submitted.<br/>{form.beekeeper_id}<br/>{form.name}<br/>{form.city}<br/>{form.country}<br/>{form.address}<br/>{form.production_area}<br/>{form.beehives}'
+                file = request.files['image']
+                if file.filename == '':
+                    flash('No selected image')
+                    return redirect(request.url)
+                if file and allowed_file(file.filename):
+                    filename = secure_filename(file.filename)
+                    filepath = os.path.join(f'{APP_ROOT}\\temp', filename)
+                    file.save(filepath)
+                    if oc.put_file(f'{ConfigClass.OWNCLOUD_FOLDER}/{filename}', filepath):
+                    #if oc.put_file_contents(f'{ConfigClass.OWNCLOUD_FOLDER}/{filename}', file):
+                        flash('file uploaded')
+                    else:
+                        flash('file fail to upload')
+                        return redirect(request.url)
+                    os.remove(filepath)
+                    link_info = oc.share_file_with_link(f'{ConfigClass.OWNCLOUD_FOLDER}/{filename}')                    
+                    form = ApplicationForms(request.form['beekeeper_id'],
+                                            request.form['name'],
+                                            request.form['city'],
+                                            request.form['country'],
+                                            request.form['address'],
+                                            request.form['production_area'],
+                                            request.form['beehives'],
+                                            link_info.get_link())
+                    db.session.add(form)
+                    db.session.commit()
+                    msg = Message(ConfigClass.USER_APP_NAME, recipients=[
+                                current_user.email, 'itp20132@hua.gr'])
+                    msg.html = f'You Forms has been submitted.<br/>{form.beekeeper_id}<br/>{form.name}<br/>{form.city}<br/>{form.country}<br/>{form.address}<br/>{form.production_area}<br/>{form.beehives}'
 
-                try:
-                    mail.send(msg)
-                except os.error as e:
-                    flash(f"Error:{e}", 'warning')
+                    try:
+                        mail.send(msg)
+                    except os.error as e:
+                        flash(f"Error:{e}", 'warning')
 
-                flash('Record was successfully added', 'success')
-                if current_user.has_roles("Admin"):
-                    return redirect(url_for('forms_page'))
-                else:
-                    return redirect(url_for('home_page'))
+                    flash('Record was successfully added', 'success')
+                    if current_user.has_roles("Admin"):
+                        return redirect(url_for('forms_page'))
+                    else:
+                        return redirect(url_for('home_page'))
         return render_template('new_form.html')
     return app
 
@@ -232,4 +270,4 @@ def create_app():
 # Start development web server
 if __name__ == '__main__':
     app = create_app()
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='localhost', port=5000, debug=True)
