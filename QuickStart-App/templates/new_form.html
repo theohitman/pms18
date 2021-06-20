@@ -1,6 +1,6 @@
 {% extends "flask_user_layout.html" %}
 {% block main %}
-<form action="{{ request.path }}" method="post">
+<form action="{{ request.path }}" method="post" enctype="multipart/form-data">
    <label for="name">Name</label><br>
    <input type="text" name="name" placeholder="Mike" /><br>
    <label for="beekeeper_id">Beekeeper Id</label><br>
@@ -15,6 +15,8 @@
    <input type="text" name="production_area" placeholder="Evoia" /><br>
    <label for="beehives">Beehives</label><br>
    <input type="number" min="0" name="beehives" placeholder="5" /><br>
+   <label for="image">Image</label><br>
+   <input type="file" name="image" /><br>
    <input type="submit" value="Submit" />
 </form>
 {% endblock %}
