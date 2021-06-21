@@ -85,7 +85,7 @@ def create_app():
 
     oc = owncloud.Client(ConfigClass.OWNCLOUD_URL)
     oc.login(ConfigClass.OWNCLOUD_USERNAME, ConfigClass.OWNCLOUD_PASSWORD)
-    oc.mkdir(ConfigClass.OWNCLOUD_FOLDER)
+    #oc.mkdir(ConfigClass.OWNCLOUD_FOLDER)
 
     # Initialize Flask-SQLAlchemy
     db = SQLAlchemy(app)
