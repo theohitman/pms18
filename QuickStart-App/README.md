@@ -1,24 +1,4 @@
-## Απλή εφαρμογή εγγραφής και σύνδεσης χρηστών 
-
-https://flask-user.readthedocs.io/en/latest/quickstart_app.html 
+## Εφαρμογή Ηλεκτρονικής Υποβολής Αιτήσεων για τη Δήλωση Κατεχόμενων Κυψελών
 
 
-* Για εγκατάσταση τρέξε:
-
-```bash
-ansible-playbook playbooks/quickstart.yml 
-```
-
-* Πρόσβαση από browser: http://192.168.135.112:5000/
-
-
-# Για να τρέξει:
-cd .\QuickStart-App
-python quickstart_app.py
-
-# Για εγκατάσταση τρέξε:
-pip install -r requirements.txt
-
-# Admin Credentials
-admin
-Admin1
+Να γράψουμε εδώ μερικά λόγια
