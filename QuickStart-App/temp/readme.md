@@ -1,0 +1,1 @@
+### Beekeeper App saves temporary photos here before it uploads it to owncloud

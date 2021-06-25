@@ -9,8 +9,8 @@ service:
 
 app:
   env:
-    SQLALCHEMY_DATABASE_URI: sqlite:///quickstart_app.sqlite
-    #SQLALCHEMY_DATABASE_URI: postgresql://demouser:pass123@192.168.135.121/demodb
+    #SQLALCHEMY_DATABASE_URI: sqlite:///quickstart_app.sqlite
+    SQLALCHEMY_DATABASE_URI: postgresql://demouser:pass123@192.168.135.121/demodb
     SQLALCHEMY_TRACK_MODIFICATIONS: False
     SECRET_KEY: $%x?A4KE&un986T9w9Ef@sXBYvhZCT7b
 
