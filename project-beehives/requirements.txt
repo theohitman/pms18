@@ -1,0 +1,4 @@
+Flask-User
+email_validator
+python-dotenv
+pyocclient
