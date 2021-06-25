@@ -35,8 +35,7 @@
 
   vars:
     user_dir: "/home/vagrant"
-    repo_dir: "{{user_dir}}/pms18"
-    app_dir: "{{user_dir}}/pms18/project-beehives"
+    app_dir: "{{user_dir}}/pms18/QuickStart-App"
     git_repo_url: "https://github.com/theohitman/pms18.git"
     git_repo_branch: "main"
   
