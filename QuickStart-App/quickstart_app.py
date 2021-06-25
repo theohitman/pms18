@@ -229,7 +229,11 @@ def create_app():
                     return redirect(request.url)
                 if file and allowed_file(file.filename):
                     filename = secure_filename(file.filename)
-                    filepath = os.path.join(f'{APP_ROOT}\\temp', filename)
+                    dirpath = os.path.join(APP_ROOT, 'temp')
+                    directory = os.path.dirname(dirpath)
+                    if not os.path.exists(directory):
+                        os.makedirs(directory)
+                    filepath = os.path.join(dirpath, filename)
                     file.save(filepath)
                     if oc.put_file(f'{ConfigClass.OWNCLOUD_FOLDER}/{filename}', filepath):
                     #if oc.put_file_contents(f'{ConfigClass.OWNCLOUD_FOLDER}/{filename}', file):
