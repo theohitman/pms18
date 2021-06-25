@@ -1,6 +1,6 @@
 service:
-  workingdir: /home/vagrant/pms18/project-beehives
-  execstart: /home/vagrant/pms18/project-beehives/fvenv/bin/python quickstart_app.py
+  workingdir: /home/vagrant/pms18/QuickStart-App
+  execstart: /home/vagrant/pms18/QuickStart-App/fvenv/bin/python quickstart_app.py
 
 # service:
 #   workingdir: /home/vagrant/flask-project/
