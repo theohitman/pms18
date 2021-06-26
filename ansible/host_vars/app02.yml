@@ -6,7 +6,7 @@ app:
   env:
     SQLALCHEMY_DATABASE_URI: postgresql://demouser:pass123@192.168.135.121/demodb
     SQLALCHEMY_TRACK_MODIFICATIONS: False
-    SECRET_KEY: sfvgbrh212131
+    SECRET_KEY: $%x?A4KE&un986T9w9Ef@sXBYvhZCT7b
 
 mailhog_install_dir: go/bin
 mailhog_daemonize_bin_path: /usr/sbin/daemonize
