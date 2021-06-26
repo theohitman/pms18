@@ -8,5 +8,6 @@ app:
     SQLALCHEMY_TRACK_MODIFICATIONS: False
     SECRET_KEY: $%x?A4KE&un986T9w9Ef@sXBYvhZCT7b
 
+
 mailhog_install_dir: go/bin
 mailhog_daemonize_bin_path: /usr/sbin/daemonize
