@@ -17,12 +17,28 @@
 
   - name: "APT - Install Prerequisites"
     apt:
-      name: [apache2, mariadb-server, mariadb-client, php7.3, libapache2-mod-php7.3, php7.3-mysql, php7.3-intl, php7.3-curl, php7.3-json, php7.3-gd, php7.3-xml, php7.3-mbstring, php7.3-zip]
+      name: [apache2, mariadb-server, mariadb-client, php7.3, libapache2-mod-php7.3, php7.3-mysql, php7.3-intl, php7.3-curl, php7.3-json, php7.3-gd, php7.3-xml, php7.3-mbstring, php7.3-zip, python3-pymysql]
       update_cache: yes
+      cache_valid_time: 3600
     become: yes
     when: hostvars[inventory_hostname].ansible_distribution == 'Ubuntu'
 
+  # - name: Create owncloud database
+  #   mysql_db:
+  #     name: owncloud
+  #   become: yes
+  #   become_user: mysql
+  
+  # - name: Create owncloud db user
+  #   mysql_user:
+  #     name: ownuser
+  #     password: ownpass
+  #     state: present
+  #     priv: 'owncloud.*:ALL'
+  #   become: yes
+  #   become_user: mysql
 
+    
   - name: Download owncloud
     get_url:
       url: "{{owncloud_url}}"

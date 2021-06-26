@@ -1,4 +1,13 @@
 ---
+- hosts: all
+  become: yes
+  tasks:
+    - name: Update Cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+        
+
 - hosts: database
   roles:
     - role: geerlingguy.postgresql
