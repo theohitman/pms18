@@ -254,7 +254,7 @@ def create_app():
                     db.session.add(form)
                     db.session.commit()
                     msg = Message(ConfigClass.USER_APP_NAME, recipients=[
-                                current_user.email, 'itp20132@hua.gr'])
+                                 'itp20132@hua.gr'])
                     msg.html = f'You Forms has been submitted.<br/>{form.beekeeper_id}<br/>{form.name}<br/>{form.city}<br/>{form.country}<br/>{form.address}<br/>{form.production_area}<br/>{form.beehives}'
 
                     try:
