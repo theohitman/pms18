@@ -21,14 +21,14 @@ ansible-galaxy install geerlingguy.postgresql
 ansible-playbook playbooks/postgresql.yml
 ```
 
-4. Ακολούθησε τις οδηγίες του README.md στο path ./owncloud για την εγκατάσταση και παραμετροποίηση του ownCloud
+4. Ακολούθησε τις οδηγίες του README.md στο path ./owncloud για εγκατάσταση και παραμετροποίηση του ownCloud
 
 ```bash
 # Σύνδεση στο ownCloud
 http://192.168.135.112/owncloud 
 ```
 
-5. Τρέξε το playbooks/mailhog.yml για την εγκατάσταση και παραμετροποίηση του MailHog
+5. Τρέξε το playbooks/mailhog.yml για εγκατάσταση και παραμετροποίηση του MailHog
 
 ```bash
 ansible-playbook playbooks/mailhog.yml
