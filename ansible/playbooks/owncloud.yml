@@ -1,7 +1,14 @@
 ---
+- hosts: all
+  become: yes
+  tasks:
+    - name: Update Cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
 - hosts: app02
   
-
   vars:
     user_dir: "/home/vagrant"
     owncloud_url: "https://download.owncloud.org/community/owncloud-complete-20210326.tar.bz2"
@@ -17,28 +24,55 @@
 
   - name: "APT - Install Prerequisites"
     apt:
-      name: [apache2, mariadb-server, mariadb-client, php7.3, libapache2-mod-php7.3, php7.3-mysql, php7.3-intl, php7.3-curl, php7.3-json, php7.3-gd, php7.3-xml, php7.3-mbstring, php7.3-zip, python3-pymysql]
+      pkg: 
+        - apache2
+        - php7.3
+        - libapache2-mod-php7.3
+        - php7.3-pgsql
+        - php7.3-intl
+        - php7.3-curl
+        - php7.3-json
+        - php7.3-gd
+        - php7.3-xml
+        - php7.3-mbstring
+        - php7.3-zip
+        - php7.3-opcache
+        - postgresql-client
       update_cache: yes
       cache_valid_time: 3600
     become: yes
     when: hostvars[inventory_hostname].ansible_distribution == 'Ubuntu'
+    notify: restart apache2
 
-  # - name: Create owncloud database
-  #   mysql_db:
-  #     name: owncloud
-  #   become: yes
-  #   become_user: mysql
+  - name: Create owncloud database
+    postgresql_db:
+      name: "{{db.name}}"
+    become: yes
+    become_user: postgres
+    delegate_to: "{{db.host}}"
+    run_once: yes
   
-  # - name: Create owncloud db user
-  #   mysql_user:
-  #     name: ownuser
-  #     password: ownpass
-  #     state: present
-  #     priv: 'owncloud.*:ALL'
-  #   become: yes
-  #   become_user: mysql
+  - name: Create owncloud db user
+    postgresql_user:
+      name: "{{db.user}}"
+      password: "{{db.pass}}"
+      state: present
+    become: yes
+    become_user: postgres
+    delegate_to: "{{db.host}}"
+    run_once: yes
 
-    
+  - name: Grant privileges on owncloud db user to owncloud db 
+    postgresql_privs:
+      privs: ALL
+      database: "{{db.name}}"
+      roles: "{{db.user}}"
+      type: database
+    become: yes
+    become_user: postgres
+    delegate_to: "{{db.host}}"
+    run_once: yes  
+  
   - name: Download owncloud
     get_url:
       url: "{{owncloud_url}}"
@@ -89,3 +123,4 @@
       service:
         name: apache2
         state: restarted
+      become: yes

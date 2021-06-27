@@ -1,4 +1,12 @@
 ---
+- hosts: all
+  become: yes
+  tasks:
+    - name: Update Cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+        
 - hosts: localhost
   vars:
     - server_hostname: project_pms18.hua.gr

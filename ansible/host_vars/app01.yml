@@ -7,10 +7,18 @@ service:
 #   execstart: /home/vagrant/flask-project/fvenv/bin/gunicorn --access-logfile - --workers 3 --bind 0.0.0.0:{{app_port}} app.main:app
 # app_port: 5000
 
+db:
+  name: beekeeper_db
+  user: beekeeper_user
+  pass: beekeeper_pass
+  type: postgresql
+  host: db01
+
 app:
   env:
     #SQLALCHEMY_DATABASE_URI: sqlite:///quickstart_app.sqlite
-    SQLALCHEMY_DATABASE_URI: postgresql://demouser:pass123@192.168.135.121/demodb
+    #SQLALCHEMY_DATABASE_URI: postgresql://demouser:pass123@192.168.135.121/demodb
+    SQLALCHEMY_DATABASE_URI: "{{db.type}}://{{db.user}}:{{db.pass}}@{{db.host}}/{{db.name}}"
     SQLALCHEMY_TRACK_MODIFICATIONS: False
     SECRET_KEY: $%x?A4KE&un986T9w9Ef@sXBYvhZCT7b
 

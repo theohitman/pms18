@@ -2,15 +2,13 @@
 
 https://github.com/mailhog/MailHog 
 
-1. Ακολούθησε τις οδηγίες του README.md στο path ./vagrant για να στηθεί το εικονικό περιβάλλον που θα τρέξει η εφαρμογή
-
-2. Τρέξε το playbooks/mailhog.yml για την εγκατάσταση του MailHog. By default η εγκατάσταση γίνεται στο app02.
+1. Τρέξε το playbooks/mailhog.yml για την εγκατάσταση του MailHog. By default η εγκατάσταση γίνεται στο app02.
 
 ```bash
 ansible-playbook playbooks/mailhog.yml 
 ```
 
-3. Σύνδεση στο Web UI του MailHog
+2. Σύνδεση στο Web UI του MailHog
 
 http://192.168.135.112:8025
 

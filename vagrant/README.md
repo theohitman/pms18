@@ -1,6 +1,8 @@
-# Vagrant Installation and Usage
+# Vagrant Εγκατάσταση και Χρήση Vagrantfile
 
-## Installation
+Σηκώνουμε σε εικονικό περιβάλλον 5 VMs με Ubuntu 18.04 για τις ανάγκες της εφαρμογής
+
+## Εγκατάσταση Vagrant
 
 ```bash
 sudo apt install virtualbox
@@ -10,9 +12,12 @@ sudo mv vagrant /usr/local/bin
 sudo apt install libarchive-tools
 ```
 
-## Usage
+## Χρήση του Vagrantfile 
 
 ```bash
+# Install plugin
+vagrant plugin install vagrant-hostmanager
+
 # Start the virtual machines
 vagrant up
 

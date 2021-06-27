@@ -6,39 +6,6 @@
       apt:
         update_cache: yes
         cache_valid_time: 3600
-        
-
-- hosts: database
-  roles:
-    - role: geerlingguy.postgresql
-      become: yes
-  tasks:
-    - name: change listen_addresses to '*'
-      lineinfile: 
-        dest: /etc/postgresql/10/main/postgresql.conf 
-        regexp: "^#listen_addresses" 
-        line: "listen_addresses = '*'" 
-        state: present 
-        backup: yes
-      become: yes
-      notify:
-        - restart postgresql
-  tags:
-    - postgres
-  vars:
-    postgresql_databases:
-      - name: "{{postgresql.name}}"
-    postgresql_users:
-      - name: "{{postgresql.user}}"
-        password: "{{postgresql.pass}}"
-    postgresql_locales:
-      - 'en_US.UTF-8'
-    postgresql_hba_entries:
-      - { type: local, database: all, user: postgres, auth_method: peer }
-      - { type: local, database: all, user: all, auth_method: peer }
-      - { type: host, database: all, user: all, address: '127.0.0.1/32', auth_method: md5 }
-      - { type: host, database: all, user: all, address: '0.0.0.0/0', auth_method: md5 }
-      - { type: host, database: all, user: all, address: '::1/128', auth_method: md5 }
 
 - hosts: app01
 
@@ -50,6 +17,35 @@
     git_repo_branch: "main"
   
   tasks:
+
+  - name: Create beekeeper database
+    postgresql_db:
+      name: "{{db.name}}"
+    become: yes
+    become_user: postgres
+    delegate_to: "{{db.host}}"
+    run_once: yes
+  
+  - name: Create beekeeper db user
+    postgresql_user:
+      name: "{{db.user}}"
+      password: "{{db.pass}}"
+      state: present
+    become: yes
+    become_user: postgres
+    delegate_to: "{{db.host}}"
+    run_once: yes
+
+  - name: Grant privileges on beekeeper db user to beekeeper db 
+    postgresql_privs:
+      privs: ALL
+      database: "{{db.name}}"
+      roles: "{{db.user}}"
+      type: database
+    become: yes
+    become_user: postgres
+    delegate_to: "{{db.host}}"
+    run_once: yes  
 
   - name: ensure github.com is a known host
     lineinfile:
@@ -79,6 +75,7 @@
       line: "{{item.key}}='{{item.value}}'"
     with_items:
       - "{{app.env | dict2items}}"
+    notify: restart flask
 
   - name: install and activate virtual environment
     block:
@@ -91,7 +88,15 @@
     rescue:
     - name: "APT - install misc packages"
       apt:
-        name: [python3, python3-pip, python3-virtualenv, virtualenv, libmysqlclient-dev, mycli, pgcli, libpq-dev]
+        pkg:
+          - python3
+          - python3-pip
+          - python3-virtualenv
+          - virtualenv
+          - libmysqlclient-dev
+          - mycli
+          - pgcli
+          - libpq-dev
         update_cache: yes
       become: yes
       become_user: root
