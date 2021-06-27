@@ -36,14 +36,13 @@ ansible-playbook playbooks/mailhog.yml
 http://192.168.135.112:8025
 ```
 
-6. Τρέξε το playbooks/beehives.yml για να παραμετροποιηθούν τα VMs για την εφαρμογή. Εγκατάσταση και παραμετροποίηση PostgreSQL, Beekeeper App και Nginx web server.  
+6. Τρέξε το playbooks/beehives.yml για εγκατάσταση και παραμετροποίηση της εφαρμογής Beekeeper App και Nginx Web Server. By default η εγκατάσταση του Beekeeper App γίνεται στο VM app01 και του Nginx Web Server στο VM lb01. Επίσης δημιουργεί βάση με όνομα beekeeper_db, χρήστη beekeeper_user με pass beekeeper_pass στο VM db01.
 
 ```bash
-
 ansible-playbook playbooks/beehives.yml
 ```
 
-7. Πρόσβαση από browser στο παρακάτω URL
+7. Πρόσβαση στην εφαρμογή Beekeeper App από browser στο παρακάτω URL
 
 ```bash
 https://192.168.135.101/
